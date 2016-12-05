@@ -11,14 +11,6 @@ import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFStyle;
-import org.apache.poi.xwpf.usermodel.XWPFStyles;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -28,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
@@ -40,7 +31,7 @@ import java.util.List;
 @SuppressWarnings("SameParameterValue")
 public class Parser {
 
-    private static final String URLS_TXT = "urls-prod.txt";
+    private static final String URLS_TXT = "urls.txt";
     private static final int ARTICLES_PER_FILE = 100;
 
 
@@ -92,10 +83,7 @@ public class Parser {
     }
 
     private static XWPFDocument createDocument() throws IOException {
-//        XWPFDocument document = new XWPFDocument();
-         XWPFDocument document = new XWPFDocument(new FileInputStream("template.docx"));
-//         addCustomHeadingStyle(document, TITLE_STYLE, 1);
-        return document;
+        return new XWPFDocument(new FileInputStream("template.docx"));
     }
 
     private void addArticle(XWPFDocument document, String articleTitle, String articleText, String imageUrl)
@@ -157,39 +145,5 @@ public class Parser {
         FileOutputStream out = new FileOutputStream(file);
         document.write(out);
         out.close();
-    }
-
-    private static void addCustomHeadingStyle(XWPFDocument docxDocument, String strStyleId, int headingLevel) {
-        CTStyle ctStyle = CTStyle.Factory.newInstance();
-        ctStyle.setStyleId(strStyleId);
-
-        CTString styleName = CTString.Factory.newInstance();
-        styleName.setVal(strStyleId);
-        ctStyle.setName(styleName);
-
-        CTDecimalNumber indentNumber = CTDecimalNumber.Factory.newInstance();
-        indentNumber.setVal(BigInteger.valueOf(headingLevel));
-
-        // lower number > style is more prominent in the formats bar
-        ctStyle.setUiPriority(indentNumber);
-
-        CTOnOff onoffnull = CTOnOff.Factory.newInstance();
-        ctStyle.setUnhideWhenUsed(onoffnull);
-
-        // style shows up in the formats bar
-        ctStyle.setQFormat(onoffnull);
-
-        // style defines a heading of the given level
-        CTPPr ppr = CTPPr.Factory.newInstance();
-        ppr.setOutlineLvl(indentNumber);
-        ctStyle.setPPr(ppr);
-
-        XWPFStyle style = new XWPFStyle(ctStyle);
-
-        // is a null op if already defined
-        XWPFStyles styles = docxDocument.createStyles();
-
-        style.setType(STStyleType.PARAGRAPH);
-        styles.addStyle(style);
     }
 }
