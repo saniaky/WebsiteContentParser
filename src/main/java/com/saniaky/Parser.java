@@ -129,8 +129,7 @@ public class Parser {
     }
 
     private List<String> getUrls() throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        URL resource = classLoader.getResource(URLS_TXT);
+        URL resource = getUrl(URLS_TXT);
         if (resource == null) {
             System.out.println("Файл со ссылками не найден!");
             return Collections.emptyList();
@@ -138,6 +137,11 @@ public class Parser {
 
         String fileName = resource.getFile();
         return Files.readAllLines(new File(fileName).toPath());
+    }
+
+    private URL getUrl(String fileName) {
+        ClassLoader classLoader = getClass().getClassLoader();
+        return classLoader.getResource(fileName);
     }
 
     private static void save(XWPFDocument document, String name) throws IOException {
