@@ -36,48 +36,66 @@ import java.nio.file.Files;
 import java.util.List;
 
 /**
- * // TODO saniaky: use one file, split by 100
  * @author saniaky
  * @since 12/4/16
  */
 public class Parser {
 
-    private static final String URLS_TXT = "urls300-400.txt";
+    private static final String URLS_TXT = "urls.txt";
 
+    private static final int ARTICLES_PER_FILE = 10;
+
+    private static final int IMAGE_MAX_WIDTH_PX = 200;
     private static final int resolveTimeout = 10000;
     private static final String TITLE_STYLE = "TitleStyle";
-    private static final int IMAGE_MAX_WIDTH = 200;
 
     public static void main(String[] args) throws IOException, InvalidFormatException {
         Parser parser = new Parser();
         List<String> urls = parser.getUrls();
         HtmlFetcher fetcher = new HtmlFetcher();
+        XWPFDocument document = createDocument();
+        int articlesNumber = 0;
 
-        // Blank Document
-        XWPFDocument document = new XWPFDocument();
-//        XWPFDocument document = new XWPFDocument(new FileInputStream("template.docx"));
-        addCustomHeadingStyle(document, TITLE_STYLE, 1);
-//         parser.addToc(document);
-
-        for (int i = 0; i < urls.size(); i++) {
-            String url = urls.get(i);
-
+        for (int row = 0; row < urls.size(); row++) {
             JResult res;
             try {
-                res = fetcher.fetchAndExtract(url, resolveTimeout, true);
+                res = fetcher.fetchAndExtract(urls.get(row), resolveTimeout, true);
             } catch (Exception e) {
-                System.out.println("Не получается загрузить статью: " + url);
+                System.out.println("Не получается загрузить статью: " + urls.get(row));
+                System.out.println("Причина: " + e.getMessage());
                 continue;
             }
 
             String text = res.getText();
             String title = res.getTitle();
             String imageUrl = res.getImageUrl();
-            System.out.println("Строка " + i + ": " + title);
-
+            System.out.println("Строка " + (row + 1) + ": " + title);
             parser.addArticle(document, title, text, imageUrl);
+            articlesNumber++;
+
+            if (articlesNumber % ARTICLES_PER_FILE == 0) {
+                save(document, getFilename(row));
+                document = createDocument();
+                articlesNumber = 0;
+            }
         }
-        parser.save(document);
+
+        if (articlesNumber != 0) {
+            save(document, getFilename(urls.size()));
+        }
+    }
+
+    private static String getFilename(int row) {
+        int fileStarts = row / ARTICLES_PER_FILE;
+        fileStarts = fileStarts * ARTICLES_PER_FILE + 1;
+        int fileEnds = fileStarts + ARTICLES_PER_FILE - 1;
+        return String.format("Стартапы %d-%d.docx", fileStarts, fileEnds);
+    }
+
+    private static XWPFDocument createDocument() {
+        XWPFDocument document = new XWPFDocument();
+        addCustomHeadingStyle(document, TITLE_STYLE, 1);
+        return document;
     }
 
     private void addToc(XWPFDocument document) {
@@ -92,14 +110,13 @@ public class Parser {
     private void addArticle(XWPFDocument document, String articleTitle, String articleText, String imageUrl)
             throws IOException, InvalidFormatException {
 
-        // Заголовок
+        // Add title
         XWPFParagraph paragraph = document.createParagraph();
         paragraph.setStyle(TITLE_STYLE);
-
         XWPFRun title = paragraph.createRun();
         title.setText(articleTitle);
 
-        // If image available
+        // Add image if exist
         if (StringUtils.isNotEmpty(imageUrl)) {
             paragraph = document.createParagraph();
             XWPFRun link = paragraph.createRun();
@@ -110,9 +127,9 @@ public class Parser {
                     imageStream = new URL(imageUrl).openStream(); // TODO saniaky: reuse stream
                     int width = bimg.getWidth();
                     int height = bimg.getHeight();
-                    if (width > IMAGE_MAX_WIDTH) {
+                    if (width > IMAGE_MAX_WIDTH_PX) {
                         double ratio = (double) height / width;
-                        width = IMAGE_MAX_WIDTH;
+                        width = IMAGE_MAX_WIDTH_PX;
                         height = (int) (ratio * width);
                     }
                     width = Units.toEMU(width);
@@ -125,7 +142,7 @@ public class Parser {
             }
         }
 
-        // Текст
+        // Article text
         paragraph = document.createParagraph();
         XWPFRun article = paragraph.createRun();
         article.setText(articleText);
@@ -138,14 +155,13 @@ public class Parser {
         String fileName = classLoader.getResource(URLS_TXT).getFile();
         File file = new File(fileName);
         if (!file.exists()) {
-            throw new FileNotFoundException("Файл urls.txt не найден!");
+            throw new FileNotFoundException("Файл " + URLS_TXT + " не найден!");
         }
         return Files.readAllLines(file.toPath());
     }
 
-    private void save(XWPFDocument document) throws IOException {
-        // Write the Document in file system
-        File file = new File("result.docx");
+    private static void save(XWPFDocument document, String name) throws IOException {
+        File file = new File(name);
         FileOutputStream out = new FileOutputStream(file);
         document.write(out);
         out.close();
@@ -183,6 +199,5 @@ public class Parser {
 
         style.setType(STStyleType.PARAGRAPH);
         styles.addStyle(style);
-
     }
 }
