@@ -15,17 +15,15 @@ import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDecimalNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTOnOff;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STOnOff;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,11 +37,12 @@ import java.util.List;
  * @author saniaky
  * @since 12/4/16
  */
+@SuppressWarnings("SameParameterValue")
 public class Parser {
 
     private static final String URLS_TXT = "urls.txt";
-
     private static final int ARTICLES_PER_FILE = 10;
+
 
     private static final int IMAGE_MAX_WIDTH_PX = 200;
     private static final int resolveTimeout = 10000;
@@ -54,6 +53,8 @@ public class Parser {
         List<String> urls = parser.getUrls();
         HtmlFetcher fetcher = new HtmlFetcher();
         XWPFDocument document = createDocument();
+
+        int fileNumber = 1;
         int articlesNumber = 0;
 
         for (int row = 0; row < urls.size(); row++) {
@@ -74,37 +75,26 @@ public class Parser {
             articlesNumber++;
 
             if (articlesNumber % ARTICLES_PER_FILE == 0) {
-                save(document, getFilename(row));
+                save(document, getFilename(fileNumber));
                 document = createDocument();
                 articlesNumber = 0;
+                fileNumber++;
             }
         }
 
         if (articlesNumber != 0) {
-            save(document, getFilename(urls.size()));
+            save(document, getFilename(fileNumber));
         }
     }
 
-    private static String getFilename(int row) {
-        int fileStarts = row / ARTICLES_PER_FILE;
-        fileStarts = fileStarts * ARTICLES_PER_FILE + 1;
-        int fileEnds = fileStarts + ARTICLES_PER_FILE - 1;
-        return String.format("Стартапы %d-%d.docx", fileStarts, fileEnds);
+    private static String getFilename(int fileNum) {
+        return String.format("Стартапы %d.docx", fileNum);
     }
 
-    private static XWPFDocument createDocument() {
-        XWPFDocument document = new XWPFDocument();
+    private static XWPFDocument createDocument() throws IOException {
+        XWPFDocument document = new XWPFDocument(new FileInputStream("template.docx"));
         addCustomHeadingStyle(document, TITLE_STYLE, 1);
         return document;
-    }
-
-    private void addToc(XWPFDocument document) {
-        XWPFParagraph paragraph = document.createParagraph();
-        CTP ctp = paragraph.getCTP();
-        CTSimpleField toc = ctp.addNewFldSimple();
-        toc.setInstr("TOC /h");
-        toc.setDirty(STOnOff.TRUE);
-        paragraph.setPageBreak(true);
     }
 
     private void addArticle(XWPFDocument document, String articleTitle, String articleText, String imageUrl)
@@ -161,6 +151,7 @@ public class Parser {
     }
 
     private static void save(XWPFDocument document, String name) throws IOException {
+        document.enforceUpdateFields();
         File file = new File(name);
         FileOutputStream out = new FileOutputStream(file);
         document.write(out);
