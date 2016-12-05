@@ -36,7 +36,7 @@ public class Parser {
 
 
     private static final int IMAGE_MAX_WIDTH_PX = 200;
-    private static final int resolveTimeout = 10000;
+    private static final int resolveTimeout = 30000;
     private static final String TITLE_STYLE = "Title";
 
     public static void main(String[] args) throws IOException, InvalidFormatException {
