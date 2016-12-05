@@ -26,7 +26,6 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,14 +36,17 @@ import java.nio.file.Files;
 import java.util.List;
 
 /**
+ * // TODO saniaky: use one file, split by 100
  * @author saniaky
  * @since 12/4/16
  */
 public class Parser {
 
+    private static final String URLS_TXT = "urls300-400.txt";
+
     private static final int resolveTimeout = 10000;
-    private static final String URLS_TXT = "urls1-100.txt";
     private static final String TITLE_STYLE = "TitleStyle";
+    private static final int IMAGE_MAX_WIDTH = 200;
 
     public static void main(String[] args) throws IOException, InvalidFormatException {
         Parser parser = new Parser();
@@ -106,11 +108,18 @@ public class Parser {
                 BufferedImage bimg = ImageIO.read(imageStream);
                 if (bimg != null) {
                     imageStream = new URL(imageUrl).openStream(); // TODO saniaky: reuse stream
-                    int width = Units.toEMU(bimg.getWidth());
-                    int height = Units.toEMU(bimg.getHeight());
+                    int width = bimg.getWidth();
+                    int height = bimg.getHeight();
+                    if (width > IMAGE_MAX_WIDTH) {
+                        double ratio = (double) height / width;
+                        width = IMAGE_MAX_WIDTH;
+                        height = (int) (ratio * width);
+                    }
+                    width = Units.toEMU(width);
+                    height = Units.toEMU(height);
                     link.addPicture(imageStream, Document.PICTURE_TYPE_JPEG, imageUrl, width, height);
                 }
-            } catch (IOException e) {
+            } catch (IOException | ArrayIndexOutOfBoundsException e) {
                 System.out.println("Не получается загрузить изображение: " + imageUrl);
                 System.out.println("Причина: " + e.getMessage());
             }
