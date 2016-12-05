@@ -16,12 +16,12 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -131,12 +131,14 @@ public class Parser {
 
     private List<String> getUrls() throws IOException {
         ClassLoader classLoader = getClass().getClassLoader();
-        String fileName = classLoader.getResource(URLS_TXT).getFile();
-        File file = new File(fileName);
-        if (!file.exists()) {
-            throw new FileNotFoundException("Файл " + URLS_TXT + " не найден!");
+        URL resource = classLoader.getResource(URLS_TXT);
+        if (resource == null) {
+            System.out.println("Файл со ссылками не найден!");
+            return Collections.emptyList();
         }
-        return Files.readAllLines(file.toPath());
+
+        String fileName = resource.getFile();
+        return Files.readAllLines(new File(fileName).toPath());
     }
 
     private static void save(XWPFDocument document, String name) throws IOException {
