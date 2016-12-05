@@ -40,13 +40,13 @@ import java.util.List;
 @SuppressWarnings("SameParameterValue")
 public class Parser {
 
-    private static final String URLS_TXT = "urls.txt";
-    private static final int ARTICLES_PER_FILE = 10;
+    private static final String URLS_TXT = "urls-prod.txt";
+    private static final int ARTICLES_PER_FILE = 100;
 
 
     private static final int IMAGE_MAX_WIDTH_PX = 200;
     private static final int resolveTimeout = 10000;
-    private static final String TITLE_STYLE = "TitleStyle";
+    private static final String TITLE_STYLE = "Title";
 
     public static void main(String[] args) throws IOException, InvalidFormatException {
         Parser parser = new Parser();
@@ -92,8 +92,9 @@ public class Parser {
     }
 
     private static XWPFDocument createDocument() throws IOException {
-        XWPFDocument document = new XWPFDocument(new FileInputStream("template.docx"));
-        addCustomHeadingStyle(document, TITLE_STYLE, 1);
+//        XWPFDocument document = new XWPFDocument();
+         XWPFDocument document = new XWPFDocument(new FileInputStream("template.docx"));
+//         addCustomHeadingStyle(document, TITLE_STYLE, 1);
         return document;
     }
 
