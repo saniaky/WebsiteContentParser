@@ -103,7 +103,6 @@ public class Parser {
                 InputStream imageStream = new URL(imageUrl).openStream();
                 BufferedImage bimg = ImageIO.read(imageStream);
                 if (bimg != null) {
-                    imageStream = new URL(imageUrl).openStream(); // TODO saniaky: reuse stream
                     int width = bimg.getWidth();
                     int height = bimg.getHeight();
                     if (width > IMAGE_MAX_WIDTH_PX) {
@@ -113,6 +112,7 @@ public class Parser {
                     }
                     width = Units.toEMU(width);
                     height = Units.toEMU(height);
+                    imageStream = new URL(imageUrl).openStream(); // TODO saniaky: reuse stream
                     link.addPicture(imageStream, Document.PICTURE_TYPE_JPEG, imageUrl, width, height);
                 }
             } catch (IOException | ArrayIndexOutOfBoundsException e) {
