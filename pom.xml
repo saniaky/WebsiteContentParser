@@ -8,8 +8,12 @@
     <artifactId>parser</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-
     <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <snacktory.version>1.1</snacktory.version>
+        <commons.version>3.5</commons.version>
         <poi.version>3.13</poi.version>
     </properties>
 
@@ -17,15 +21,13 @@
         <dependency>
             <groupId>de.jetwick</groupId>
             <artifactId>snacktory</artifactId>
-            <version>1.1</version>
-            <!-- or if you prefer the latest build <version>1.2-SNAPSHOT</version> -->
+            <version>${snacktory.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.5</version>
+            <version>${commons.version}</version>
         </dependency>
 
         <dependency>
