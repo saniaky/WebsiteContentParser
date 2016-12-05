@@ -28,7 +28,6 @@ import java.util.List;
  * @author saniaky
  * @since 12/4/16
  */
-@SuppressWarnings("SameParameterValue")
 public class Parser {
 
     private static final String URLS_TXT = "urls.txt";
