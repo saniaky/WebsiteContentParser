@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -25,16 +26,20 @@ import java.util.List;
  */
 public class Parser {
 
-    private static final String URLS_TXT = "urls.txt";
+//    private static final String URLS_TXT = "urls.txt";
+    private static final String URLS_TXT = "urls-02.12.2016.txt";
+
     private static final int ARTICLES_PER_FILE = 100;
 
     private static final int IMAGE_MAX_WIDTH_PX = 200;
+    private static final int SLEEP_TIMEOUT = 5000;
+    private static final int MAX_FAILED_COUNT = 20;
     private static final int RESOLVE_TIMEOUT = 30000;
     private static final String TITLE_STYLE = "Title";
-    private static final String TEMPLATE_DOCX = "template.docx";
+    private static final String TEMPLATE_FILE = "template.docx";
     private static final String TEMP_FILE = "targetFile.tmp";
 
-    public static void main(String[] args) throws IOException, InvalidFormatException {
+    public static void main(String[] args) throws IOException, InvalidFormatException, InterruptedException {
         Parser parser = new Parser();
         List<String> urls = parser.getUrls();
         HtmlFetcher fetcher = new HtmlFetcher();
@@ -42,17 +47,33 @@ public class Parser {
 
         int fileNumber = 1;
         int articlesNumber = 0;
+        int failedCount = 0;
+        int totalFailedCount = 0;
+        List<String> failedUrls = new ArrayList<>();
 
-        for (String url : urls) {
+        for (int i = 0; i < urls.size(); i++) {
+            String url = urls.get(i);
+
+            JResult result;
             try {
-                JResult result = fetcher.fetchAndExtract(url, RESOLVE_TIMEOUT, true);
-                parser.addArticle(document, result);
+                result = fetcher.fetchAndExtract(url, RESOLVE_TIMEOUT, true);
             } catch (Exception e) {
-                System.out.println("Не получается загрузить статью: " + url);
-                System.out.println("Причина: " + e.getMessage());
+                if (e.getMessage().equals("Invalid Http response") && failedCount < MAX_FAILED_COUNT) {
+                    i--;
+                    failedCount++;
+                    System.err.println("Не получается загрузить статью: " + url + ", попытка " + failedCount);
+                    Thread.sleep(SLEEP_TIMEOUT);
+                } else {
+                    System.err.println("Пропущена статья - " + url + ", Error: " + e.getMessage());
+                    failedCount = 0;
+                    totalFailedCount++;
+                    failedUrls.add(url);
+                }
                 continue;
             }
+            failedCount = 0;
 
+            parser.addArticle(document, result);
             articlesNumber++;
 
             if (articlesNumber % ARTICLES_PER_FILE == 0) {
@@ -61,11 +82,19 @@ public class Parser {
                 articlesNumber = 0;
                 fileNumber++;
             }
+
+            System.out.println(String.format("%s-%s: %s (%s)", fileNumber, articlesNumber, result.getTitle(), result.getUrl()));
         }
 
         if (articlesNumber != 0) {
             save(document, getFilename(fileNumber));
         }
+
+        System.out.println("Всего пропущено статей: " + totalFailedCount);
+        for (String failedUrl : failedUrls) {
+            System.out.println(failedUrl);
+        }
+        // TODO AKoh write to file failedUrls.txt
     }
 
     private static String getFilename(int fileNum) {
@@ -73,14 +102,13 @@ public class Parser {
     }
 
     private static XWPFDocument createDocument() throws IOException {
-        return new XWPFDocument(new FileInputStream(TEMPLATE_DOCX));
+        return new XWPFDocument(new FileInputStream(TEMPLATE_FILE));
     }
 
     private void addArticle(XWPFDocument document, JResult article) {
         addTitle(document, article);
         addImageIfExist(document, article);
         addText(document, article);
-        System.out.println(article.getTitle());
     }
 
     private void addText(XWPFDocument document, JResult article) {
@@ -102,23 +130,28 @@ public class Parser {
         String imageUrl = article.getImageUrl();
         if (StringUtils.isNotEmpty(imageUrl)) {
             try {
+                // Save image to file
                 InputStream imageStream = new URL(imageUrl).openStream();
                 File targetFile = new File(TEMP_FILE);
                 FileUtils.copyInputStreamToFile(imageStream, targetFile);
 
-                // get image info
-                BufferedImage bimg = ImageIO.read(FileUtils.openInputStream(targetFile));
-                if (bimg != null) {
-                    int width = bimg.getWidth();
-                    int height = bimg.getHeight();
+                BufferedImage bufferedImage = ImageIO.read(FileUtils.openInputStream(targetFile));
+                if (bufferedImage != null) {
+                    int width = bufferedImage.getWidth();
+                    int height = bufferedImage.getHeight();
+
+                    // Scale image
                     if (width > IMAGE_MAX_WIDTH_PX) {
                         double ratio = (double) height / width;
                         width = IMAGE_MAX_WIDTH_PX;
                         height = (int) (ratio * width);
                     }
 
+                    // Detect picture type
                     int pictureType = getPictureType(targetFile);
                     if (pictureType != -1) {
+
+                        // Add image to doc
                         XWPFParagraph paragraph = document.createParagraph();
                         XWPFRun link = paragraph.createRun();
                         link.addPicture(
@@ -129,8 +162,7 @@ public class Parser {
                     }
                 }
             } catch (IOException | ArrayIndexOutOfBoundsException | InvalidFormatException e) {
-                System.out.println("Не получается загрузить изображение: " + imageUrl);
-                System.out.println("Причина: " + e.getMessage());
+                System.err.println("Не получается добавить изображение: " + imageUrl + ", Error: " + e.getMessage());
             }
         }
     }
