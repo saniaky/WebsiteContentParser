@@ -26,8 +26,7 @@ import java.util.List;
  */
 public class Parser {
 
-//    private static final String URLS_TXT = "urls.txt";
-    private static final String URLS_TXT = "urls-02.12.2016.txt";
+    private static final String URLS_TXT = "urls.txt";
 
     private static final int ARTICLES_PER_FILE = 100;
 
@@ -105,6 +104,14 @@ public class Parser {
         return new XWPFDocument(new FileInputStream(TEMPLATE_FILE));
     }
 
+    private static void save(XWPFDocument document, String name) throws IOException {
+        document.enforceUpdateFields();
+        File file = new File(name);
+        FileOutputStream out = new FileOutputStream(file);
+        document.write(out);
+        out.close();
+    }
+
     private void addArticle(XWPFDocument document, JResult article) {
         addTitle(document, article);
         addImageIfExist(document, article);
@@ -130,6 +137,12 @@ public class Parser {
         String imageUrl = article.getImageUrl();
         if (StringUtils.isNotEmpty(imageUrl)) {
             try {
+                // If image path are relative
+                if (!imageUrl.startsWith("http")) {
+                    URL site = new URL(article.getUrl());
+                    imageUrl = site.getProtocol() + "://" + site.getHost() + "/" + imageUrl;
+                }
+
                 // Save image to file
                 InputStream imageStream = new URL(imageUrl).openStream();
                 File targetFile = new File(TEMP_FILE);
@@ -212,13 +225,5 @@ public class Parser {
     private URL getResourceUrl(String fileName) {
         ClassLoader classLoader = getClass().getClassLoader();
         return classLoader.getResource(fileName);
-    }
-
-    private static void save(XWPFDocument document, String name) throws IOException {
-        document.enforceUpdateFields();
-        File file = new File(name);
-        FileOutputStream out = new FileOutputStream(file);
-        document.write(out);
-        out.close();
     }
 }
