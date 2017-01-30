@@ -31,6 +31,7 @@ public class Parser {
     private static final int ARTICLES_PER_FILE = 100;
 
     private static final int IMAGE_MAX_WIDTH_PX = 200;
+    private static final int TIMEOUT = 1000;
     private static final int SLEEP_TIMEOUT = 5000;
     private static final int MAX_FAILED_COUNT = 20;
     private static final int RESOLVE_TIMEOUT = 30000;
@@ -44,7 +45,7 @@ public class Parser {
         HtmlFetcher fetcher = new HtmlFetcher();
         XWPFDocument document = createDocument();
 
-        int fileNumber = 1;
+        int fileNumber = 10;
         int articlesNumber = 0;
         int failedCount = 0;
         int totalFailedCount = 0;
@@ -56,6 +57,12 @@ public class Parser {
             JResult result;
             try {
                 result = fetcher.fetchAndExtract(url, RESOLVE_TIMEOUT, true);
+                if (result.getTitle().isEmpty()) {
+                    System.err.println("Пропущена статья - " + url);
+                    totalFailedCount++;
+                    failedUrls.add(url);
+                    continue;
+                }
             } catch (Exception e) {
                 if (e.getMessage().equals("Invalid Http response") && failedCount < MAX_FAILED_COUNT) {
                     i--;
@@ -83,6 +90,9 @@ public class Parser {
             }
 
             System.out.println(String.format("%s-%s: %s (%s)", fileNumber, articlesNumber, result.getTitle(), result.getUrl()));
+            if (url.contains("firrma.ru")) {
+                Thread.sleep(TIMEOUT);
+            }
         }
 
         if (articlesNumber != 0) {
