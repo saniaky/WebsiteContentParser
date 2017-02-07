@@ -1,6 +1,7 @@
-package com.saniaky.parser;
+package com.saniaky.parser.custom;
 
 import com.saniaky.model.custom.StartupUAModel;
+import com.saniaky.parser.Fetcher;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 

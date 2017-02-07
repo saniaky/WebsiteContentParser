@@ -1,5 +1,8 @@
 package com.saniaky.parser;
 
+import com.saniaky.parser.custom.InvestGo24Fetcher;
+import com.saniaky.parser.custom.StartupUAFetcher;
+
 /**
  * @author Alexander Kohonovsky
  * @since 30.01.2017

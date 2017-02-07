@@ -62,7 +62,6 @@ public class DocumentRenderer {
             }
 
             addArticle(document, article);
-
         }
 
         // TODO AKoh check if we need to save it again

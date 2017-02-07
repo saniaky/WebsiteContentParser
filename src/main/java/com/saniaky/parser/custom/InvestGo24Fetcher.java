@@ -1,8 +1,9 @@
-package com.saniaky.parser;
+package com.saniaky.parser.custom;
 
 import com.saniaky.Utils;
 import com.saniaky.model.BasicModel;
 import com.saniaky.model.custom.InvestGo24Model;
+import com.saniaky.parser.Fetcher;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
