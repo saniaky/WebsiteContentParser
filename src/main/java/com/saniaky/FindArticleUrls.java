@@ -1,6 +1,5 @@
 package com.saniaky;
 
-import com.saniaky.model.StartupMapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -113,4 +112,36 @@ public class FindArticleUrls {
     }
 
 
+}
+
+class StartupMapper {
+
+    private String id;
+    private String url;
+
+    public StartupMapper(String id, String url) {
+        this.id = id;
+        this.url = url;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("id: %s, url: %s", id, url);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

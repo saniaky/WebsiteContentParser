@@ -6,9 +6,9 @@ package com.saniaky.parser;
  */
 public class FetcherFactory {
 
-    public static GenericFetcher genericFetcher = new GenericFetcher();
-    public static StartupUAFetcher startupUaFetcher = new StartupUAFetcher();
-    public static Investgo24Fetcher investgo24Fetcher = new Investgo24Fetcher();
+    private static GenericFetcher genericFetcher = new GenericFetcher();
+    private static StartupUAFetcher startupUaFetcher = new StartupUAFetcher();
+    private static InvestGo24Fetcher investGo24Fetcher = new InvestGo24Fetcher();
 
     public static Fetcher getFetcher(String url) {
 
@@ -17,7 +17,7 @@ public class FetcherFactory {
         }
 
         if (url.contains("investgo24.com")) {
-            return investgo24Fetcher;
+            return investGo24Fetcher;
         }
 
         return genericFetcher;

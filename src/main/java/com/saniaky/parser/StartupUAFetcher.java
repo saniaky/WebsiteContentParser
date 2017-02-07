@@ -1,6 +1,6 @@
 package com.saniaky.parser;
 
-import com.saniaky.model.StartupModel;
+import com.saniaky.model.custom.StartupUAModel;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -17,7 +17,7 @@ public class StartupUAFetcher implements Fetcher {
     public static final int TIMEOUT = 5000;
 
     @Override
-    public StartupModel parse(String url) {
+    public StartupUAModel parse(String url) {
 
         Document doc = getDocument(url);
 
@@ -29,7 +29,7 @@ public class StartupUAFetcher implements Fetcher {
         //String description = doc.select("meta[name=description]").get(0).attr("content");
         String imageUrl = doc.select("#big_photo_view > img").attr("src");
 
-        StartupModel model = new StartupModel(url, title, "", imageUrl, null);
+        StartupUAModel model = new StartupUAModel(url, title, "", imageUrl, null);
 
         model.setIdea(doc.select("#IDEA > .i_d_c").text());
         model.setPresetStatus(doc.select("#PRESENT_S > .i_d_c").text());
