@@ -91,13 +91,14 @@ public class DocumentRenderer {
 
         // User line breaks from string
         String[] lines = article.getText().split("\n");
-        textRun.setText(lines[0], 0);
-        for (int i = 1; i < lines.length; i++) {
-            textRun.addBreak();
-            textRun.setText(lines[i]);
+
+        for (String line : lines) {
+            paragraph = document.createParagraph();
+            textRun = paragraph.createRun();
+            paragraph.setAlignment(ParagraphAlignment.BOTH);
+            textRun.setText(line);
         }
 
-        paragraph.setAlignment(ParagraphAlignment.LEFT);
         textRun.addBreak(BreakType.PAGE);
     }
 
