@@ -72,7 +72,6 @@ public class DocumentRenderer {
 
     private XWPFDocument createDocument() {
         try {
-            LocaleUtil.setUserLocale(new Locale("RU", "RU"));
             return new XWPFDocument(new FileInputStream(TEMPLATE_FILE));
         } catch (IOException e) {
             e.printStackTrace();
