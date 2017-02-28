@@ -2,6 +2,7 @@ package com.saniaky;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 
@@ -12,6 +13,18 @@ import java.io.IOException;
 public final class Utils {
 
     private static final int TIMEOUT = 3000;
+
+    public static String replaceParagraphWithNewLines(String html) {
+        Document doc = Jsoup.parse(html);
+        StringBuilder b = new StringBuilder();
+        for (Element p : doc.select("p")) {
+            b.append(p.text());
+            b.append(System.getProperty("line.separator"));
+            b.append(System.getProperty("line.separator"));
+            b.append("    ");
+        }
+        return b.toString();
+    }
 
     public static void sleep(int timeout) {
         try {
