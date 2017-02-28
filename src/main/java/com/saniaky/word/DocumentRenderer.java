@@ -3,7 +3,7 @@ package com.saniaky.word;
 import com.saniaky.model.BasicModel;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.util.LocaleUtil;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
 
@@ -15,6 +15,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Alexander Kohonovsky
@@ -27,7 +28,8 @@ public class DocumentRenderer {
     private static final int IMAGE_MAX_WIDTH_PX = 200;
 
     // System variables
-    private static final String TITLE_STYLE = "Title";
+    private static final String TITLE_STYLE = "Heading";
+    private static final String PARAGRAPH_STYLE = "Paragraph";
     private static final String TEMPLATE_FILE = "template.docx";
     private static final String TEMP_FILE = "targetFile.tmp";
 
@@ -70,6 +72,7 @@ public class DocumentRenderer {
 
     private XWPFDocument createDocument() {
         try {
+            LocaleUtil.setUserLocale(new Locale("RU", "RU"));
             return new XWPFDocument(new FileInputStream(TEMPLATE_FILE));
         } catch (IOException e) {
             e.printStackTrace();
@@ -93,9 +96,17 @@ public class DocumentRenderer {
         String[] lines = article.getText().split("\n");
 
         for (String line : lines) {
+            if (StringUtils.isBlank(line)) {
+                continue;
+            }
+
             paragraph = document.createParagraph();
+            paragraph.setStyle(PARAGRAPH_STYLE);
+
+            //paragraph.setFirstLineIndent(565);
+            //paragraph.setAlignment(ParagraphAlignment.BOTH);
+
             textRun = paragraph.createRun();
-            paragraph.setAlignment(ParagraphAlignment.BOTH);
             textRun.setText(line);
         }
 
@@ -149,7 +160,7 @@ public class DocumentRenderer {
                                 Units.toEMU(width), Units.toEMU(height));
                     }
                 }
-            } catch (IOException | ArrayIndexOutOfBoundsException | InvalidFormatException e) {
+            } catch (Exception e) {
                 System.err.println("Не получается добавить изображение: " + imageUrl + ", Error: " + e.getMessage());
             }
         }

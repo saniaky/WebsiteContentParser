@@ -20,8 +20,6 @@ public final class Utils {
         for (Element p : doc.select("p")) {
             b.append(p.text());
             b.append(System.getProperty("line.separator"));
-            b.append(System.getProperty("line.separator"));
-            b.append("    ");
         }
         return b.toString();
     }
