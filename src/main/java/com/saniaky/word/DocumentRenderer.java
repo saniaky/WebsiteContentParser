@@ -1,9 +1,9 @@
 package com.saniaky.word;
 
+import com.saniaky.Utils;
 import com.saniaky.model.BasicModel;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.util.LocaleUtil;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
 
@@ -13,9 +13,9 @@ import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author Alexander Kohonovsky
@@ -32,6 +32,8 @@ public class DocumentRenderer {
     private static final String PARAGRAPH_STYLE = "Paragraph";
     private static final String TEMPLATE_FILE = "template.docx";
     private static final String TEMP_FILE = "targetFile.tmp";
+    private static final int IMAGE_LOAD_TRY_COUNT = 15;
+    private static final int IMAGE_LOAD_TIMEOUT = 3000;
 
     private static String getFilename(int fileNum) {
         return String.format("Стартапы %d.docx", fileNum);
@@ -82,7 +84,7 @@ public class DocumentRenderer {
     private void addArticle(XWPFDocument document, BasicModel article) {
         if (document != null) {
             addTitle(document, article);
-            addImageIfExist(document, article);
+            addImageIfExist(document, article, 0);
             addText(document, article);
         }
     }
@@ -119,7 +121,7 @@ public class DocumentRenderer {
         title.setText(article.getTitle());
     }
 
-    private void addImageIfExist(XWPFDocument document, BasicModel article) {
+    private void addImageIfExist(XWPFDocument document, BasicModel article, int tryCount) {
         String imageUrl = article.getImageUrl();
         if (StringUtils.isNotEmpty(imageUrl)) {
             try {
@@ -130,9 +132,11 @@ public class DocumentRenderer {
                 }
 
                 // Save image to file
-                InputStream imageStream = new URL(imageUrl).openStream();
                 File targetFile = new File(TEMP_FILE);
-                FileUtils.copyInputStreamToFile(imageStream, targetFile);
+                URL url = new URL(imageUrl);
+                URLConnection hc = url.openConnection();
+                hc.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+                FileUtils.copyInputStreamToFile(hc.getInputStream(), targetFile);
 
                 BufferedImage bufferedImage = ImageIO.read(FileUtils.openInputStream(targetFile));
                 if (bufferedImage != null) {
@@ -160,7 +164,15 @@ public class DocumentRenderer {
                     }
                 }
             } catch (Exception e) {
-                System.err.println("Не получается добавить изображение: " + imageUrl + ", Error: " + e.getMessage());
+                if (e.getMessage().startsWith("Server returned HTTP response code: 403")) {
+                    if (tryCount < IMAGE_LOAD_TRY_COUNT) {
+                        Utils.sleep(IMAGE_LOAD_TIMEOUT);
+                        addImageIfExist(document, article, tryCount + 1);
+                        System.err.println("Не получается добавить изображение: " + imageUrl + ". Попытка: " + tryCount + "/" + IMAGE_LOAD_TRY_COUNT);
+                    } else {
+                        System.err.println("Не получается добавить изображение: " + imageUrl + ", Error: " + e.getMessage());
+                    }
+                }
             }
         }
     }
