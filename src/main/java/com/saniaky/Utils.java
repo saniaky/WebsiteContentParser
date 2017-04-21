@@ -12,12 +12,50 @@ import java.io.IOException;
  */
 public final class Utils {
 
-    private static final int TIMEOUT = 3000;
+    private static final int TIMEOUT = 5000;
+
+    public static String removeDuplicatedNewlines(String str) {
+        return str.replaceAll("[\r\n]+", "\n");
+    }
+
+    public static String removeHTMLTags(String html) {
+        return html.replaceAll("<[^>]*>", "");
+    }
 
     public static String replaceParagraphWithNewLines(String html) {
         Document doc = Jsoup.parse(html);
         StringBuilder b = new StringBuilder();
         for (Element p : doc.select("p")) {
+            b.append(p.text());
+            b.append(System.getProperty("line.separator"));
+        }
+        return b.toString();
+    }
+
+    public static String replaceSpanWithNewLines(String html) {
+        Document doc = Jsoup.parse(html);
+        StringBuilder b = new StringBuilder();
+        for (Element p : doc.select("span")) {
+            b.append(p.text());
+            b.append(System.getProperty("line.separator"));
+        }
+        return b.toString();
+    }
+
+    public static String replaceDivWithNewLines(String html) {
+        Document doc = Jsoup.parse(html);
+        StringBuilder b = new StringBuilder();
+        for (Element p : doc.select("div")) {
+            b.append(p.text());
+            b.append(System.getProperty("line.separator"));
+        }
+        return b.toString();
+    }
+
+    public static String replaceBrWithNewLines(String html) {
+        Document doc = Jsoup.parse(html);
+        StringBuilder b = new StringBuilder();
+        for (Element p : doc.select("br")) {
             b.append(p.text());
             b.append(System.getProperty("line.separator"));
         }
