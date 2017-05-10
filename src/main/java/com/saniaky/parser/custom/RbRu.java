@@ -26,7 +26,7 @@ public class RbRu implements Fetcher {
         model.setImageUrl(doc.select("meta[property=og:image]").attr("content"));
 
         String article = doc.select("#post-text").html();
-        model.setText(Utils.replaceParagraphWithNewLines(article));
+        model.setText(Utils.formatHTMLToText(article));
 
         return model;
     }

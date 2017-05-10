@@ -29,11 +29,11 @@ public class AinUa implements Fetcher {
 
         if (url.contains("/special/")) {
             article = doc.select("[field=text]").html();
-            model.setText(Utils.replaceDivWithNewLines(article));
         } else {
-            article = doc.select("div.post_height").html();
-            model.setText(Utils.replaceParagraphWithNewLines(article));
+            article = doc.select(".post_height > p, .post_height > h1, .post_height > h4").html();
         }
+
+        model.setText(Utils.formatHTMLToText(article));
 
         return model;
     }

@@ -26,10 +26,7 @@ public class HabrahabrRu implements Fetcher {
         model.setImageUrl(doc.select("meta[property=og:image]").attr("content"));
 
         String article = doc.select(".content").html();
-        article = article.replaceAll("<br>", "\n");
-        article = Utils.removeHTMLTags(article);
-        article = Utils.removeDuplicatedNewlines(article);
-        model.setText(article);
+        model.setText(Utils.removeHTMLTags(article));
 
         return model;
     }

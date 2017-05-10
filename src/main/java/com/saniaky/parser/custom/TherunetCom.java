@@ -26,7 +26,7 @@ public class TherunetCom implements Fetcher {
         model.setImageUrl(doc.select("meta[property=og:image]").attr("content"));
 
         String article = doc.select("div.article_content").html();
-        model.setText(Utils.replaceParagraphWithNewLines(article));
+        model.setText(Utils.formatHTMLToText(article));
 
         return model;
     }

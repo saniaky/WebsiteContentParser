@@ -28,7 +28,7 @@ public class ImenaUa implements Fetcher {
         String article = "";
 
         article = doc.select("div.entry-content").html();
-        model.setText(Utils.replaceParagraphWithNewLines(article));
+        model.setText(Utils.formatHTMLToText(article));
 
         return model;
     }

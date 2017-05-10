@@ -26,7 +26,7 @@ public class FuturebankingRu implements Fetcher {
         model.setImageUrl(doc.select("meta[property=og:image]").attr("content"));
 
         String article = doc.select("div.b-post__item-middle").html();
-        model.setText(Utils.replaceSpanWithNewLines(article));
+        model.setText(Utils.formatHTMLToText(article));
 
         return model;
     }

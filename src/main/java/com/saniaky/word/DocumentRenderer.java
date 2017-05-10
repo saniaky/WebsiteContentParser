@@ -11,7 +11,10 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Iterator;
@@ -128,7 +131,12 @@ public class DocumentRenderer {
                 // If image path are relative
                 if (!imageUrl.startsWith("http")) {
                     URL site = new URL(article.getUrl());
-                    imageUrl = site.getProtocol() + "://" + site.getHost() + "/" + imageUrl;
+
+                    if (article.getUrl().startsWith("/")) {
+                        imageUrl = site.getProtocol() + "://" + site.getHost() + "/" + imageUrl;
+                    } else {
+                        imageUrl = site.getProtocol() + "://" + article.getUrl() + "/" + imageUrl;
+                    }
                 }
 
                 // Save image to file
