@@ -11,6 +11,7 @@ import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 public class FetcherFactory {
 
     private static GenericFetcher genericFetcher = new GenericFetcher();
+    private static StartapyRu startapyRu = new StartapyRu();
     private static StartupUAFetcher startupUaFetcher = new StartupUAFetcher();
     private static InvestGo24Fetcher investGo24Fetcher = new InvestGo24Fetcher();
     private static InventureComUa inventureComUa = new InventureComUa();
@@ -31,6 +32,10 @@ public class FetcherFactory {
 
 
     public static Fetcher getFetcher(String url) {
+
+        if (containsIgnoreCase(url, "startapy.ru")) {
+            return startapyRu;
+        }
 
         if (containsIgnoreCase(url, "startup.ua")) {
             return startupUaFetcher;

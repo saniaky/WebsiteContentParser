@@ -1,5 +1,6 @@
-package com.saniaky;
+package com.saniaky.crawler;
 
+import com.saniaky.Utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,8 +19,8 @@ public class FindArticleUrls {
     public static void main(String[] args) throws IOException {
         FindArticleUrls findArticleUrls = new FindArticleUrls();
 
-        List<String> urlsList = new Main().getLines("urls.txt");
-        List<String> parsed = new Main().getLines("done.txt");
+        List<String> urlsList = Utils.getLines("urls.txt");
+        List<String> parsed = Utils.getLines("done.txt");
         urlsList.removeAll(parsed);
 
         List<String> notFound = new ArrayList<>();

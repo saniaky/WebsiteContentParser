@@ -1,8 +1,19 @@
 package com.saniaky;
 
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Alexander Kohonovsky
@@ -15,6 +26,9 @@ public final class Utils {
     private static final int MAX_TRY_COUNT = 30;
 
     public static String formatHTMLToText(String str) {
+        // b ->
+        // </br> -> \n
+
         str = str.replaceAll("</br>", "\n");
         str = str.replaceAll("<br>", "\n");
         str = str.replaceAll("</p>", "\n");
@@ -34,32 +48,17 @@ public final class Utils {
         return str.replaceAll("[\r\n]+", "\n").replaceAll("\n *", "\n").replaceAll("[\n]+", "\n");
     }
 
-    public static String removeHTMLTags(String html) {
+    private static String removeHTMLTags(String html) {
         // Jsoup.clean(article, Whitelist.none());
         return html.replaceAll("<[^>]*>", "")       // html tags
                 .replaceAll("&nbsp;", "")           // &nbsp chars
                 .replaceAll("\\[[^\\]]*\\]", "");   // evertying inside []
     }
 
-    public static String removeContentInTage(String html, String tag) {
-        // Jsoup.clean(article, Whitelist.none());
-        return html.replaceAll("\\[[^\\]]*\\]", "");   // evertying inside []
-    }
-
     public static String replaceParagraphWithNewLines(String html) {
         Document doc = Jsoup.parse(html);
         StringBuilder b = new StringBuilder();
         for (Element p : doc.select("p")) {
-            b.append(p.text());
-            b.append(System.getProperty("line.separator"));
-        }
-        return b.toString();
-    }
-
-    public static String replaceDivWithNewLines(String html) {
-        Document doc = Jsoup.parse(html);
-        StringBuilder b = new StringBuilder();
-        for (Element p : doc.select("div")) {
             b.append(p.text());
             b.append(System.getProperty("line.separator"));
         }
@@ -82,7 +81,11 @@ public final class Utils {
             Document document = null;
 
             try {
+                url = URLDecoder.decode(url, StandardCharsets.UTF_8.toString());
                 document = Jsoup.connect(url).timeout(TIMEOUT).get();
+            } catch (HttpStatusException e) {
+                lastErrorMessage = "Page not found! (404)";
+                tryCount = MAX_TRY_COUNT;
             } catch (Exception e) {
                 lastErrorMessage = "Can't retrieve page! Details: " + e.getLocalizedMessage();
                 Utils.sleep(WAIT_TIMEOUT);
@@ -98,5 +101,35 @@ public final class Utils {
         System.err.println(lastErrorMessage);
 
         return null;
+    }
+
+    public static List<String> getLines(String fileName) {
+        URL resource = getResourceUrl(fileName);
+
+        if (resource == null) {
+            System.out.println("Файл со ссылками не найден!");
+            return Collections.emptyList();
+        }
+
+        try {
+            return Files.readAllLines(new File(resource.getFile()).toPath());
+        } catch (IOException e) {
+            System.err.println("Не получается прочитать файл со ссылками - " + e.getMessage());
+        }
+
+        return Collections.emptyList();
+    }
+
+    public static void writeToFile(String fileName, List<String> strings) {
+        try {
+            Files.write(Paths.get("allUrls.txt"), strings);
+        } catch (IOException e) {
+            System.err.println("Can't write to file. Details: " + e.getMessage());
+        }
+    }
+
+    private static URL getResourceUrl(String fileName) {
+        ClassLoader classLoader = Utils.class.getClassLoader();
+        return classLoader.getResource(fileName);
     }
 }

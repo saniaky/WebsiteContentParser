@@ -9,7 +9,7 @@ import org.jsoup.nodes.Document;
  * @author Alexander Kohonovsky
  * @since 21.04.2017
  */
-public class HabrahabrRu implements Fetcher {
+public class StartapyRu implements Fetcher {
 
     @Override
     public BasicModel parse(String url) {
@@ -22,10 +22,14 @@ public class HabrahabrRu implements Fetcher {
         BasicModel model = new BasicModel();
 
         model.setUrl(url);
-        model.setTitle(doc.select("meta[property=og:title]").attr("content"));
-        model.setImageUrl(doc.select("meta[property=og:image]").attr("content"));
 
-        String article = doc.select(".content").html();
+        String title = doc.select("title").text();
+        title = title.substring(0, Math.max(0, title.length() - 14));
+        model.setTitle(title);
+
+        model.setImageUrl(doc.select(".alignnone").attr("src"));
+
+        String article = doc.select(".posts.article p").html();
         model.setText(Utils.formatHTMLToText(article));
 
         return model;

@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class WebGrabber {
 
-    public GrabberResult go(List<String> urls) {
+    public static GrabberResult go(List<String> urls) {
 
         List<BasicModel> articles = new ArrayList<>(urls.size());
         List<String> failedUrls = new ArrayList<>();
@@ -27,8 +27,7 @@ public class WebGrabber {
             // Check if page parsed successfully
             if (article == null) {
                 failedUrls.add(url);
-                System.err.println(String.format("*** Пропущена статья: %s", url));
-
+                System.err.println(String.format("*** Article missed: %s", url));
             } else {
                 articles.add(article);
                 System.out.println(String.format("%s (%s)", article.getTitle(), article.getUrl()));

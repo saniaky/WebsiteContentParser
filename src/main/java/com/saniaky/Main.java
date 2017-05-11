@@ -2,13 +2,12 @@ package com.saniaky;
 
 import com.saniaky.model.GrabberResult;
 import com.saniaky.parser.WebGrabber;
-import com.saniaky.word.DocumentRenderer;
+import com.saniaky.word.WordRenderer;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Alexander Kohonovsky
@@ -17,11 +16,12 @@ import java.util.*;
 public class Main {
 
     private static final String URLS_TXT = "urls.txt";
+    private static final int BATCH_SIZE = 100;
 
     public static void main(String[] args) {
 
         // Get links
-        List<String> urlsList = new Main().getLines(URLS_TXT);
+        List<String> urlsList = Utils.getLines(URLS_TXT);
         Set<String> originalLinks = new LinkedHashSet<>(urlsList);
 
         // Remove duplicates
@@ -30,34 +30,24 @@ public class Main {
             System.out.println("Warning! Found " + (originalLinks.size() - urls.size()) + " duplicates!");
         }
 
-        // Start parsing
-        GrabberResult result = new WebGrabber().go(urls);
+        WordRenderer wordRenderer = new WordRenderer();
 
-        // Create word file with articles
-        new DocumentRenderer().createWord(result.getProcessedArticles());
-    }
+        // Batch parse & create word file
+        for (int i = 0; i * BATCH_SIZE < urls.size(); i++) {
+            List<String> batchUrls = urls.subList(i, Math.min(urls.size(), i + BATCH_SIZE));
 
-    public List<String> getLines(String fileName) {
-        URL resource = getResourceUrl(fileName);
+            // Fetch data from websites
+            int batchNum = i + 1;
+            System.out.println("Fetching " + batchNum + " batch.");
+            GrabberResult result = WebGrabber.go(batchUrls);
 
-        if (resource == null) {
-            System.out.println("Файл со ссылками не найден!");
-            return Collections.emptyList();
+            // Create word file with articles
+            System.out.println("Creating word file.");
+            wordRenderer.createWord(result.getProcessedArticles(), getFilename(batchNum));
         }
-
-        try {
-            return Files.readAllLines(new File(resource.getFile()).toPath());
-        } catch (IOException e) {
-            System.out.println("Не получается прочитать файл со ссылками - " + e.getMessage());
-        }
-
-        return Collections.emptyList();
     }
 
-    private URL getResourceUrl(String fileName) {
-        ClassLoader classLoader = getClass().getClassLoader();
-        return classLoader.getResource(fileName);
+    private static String getFilename(int fileNum) {
+        return String.format("Стартапы %d.docx", fileNum);
     }
-
-
 }
