@@ -12,6 +12,11 @@ import org.jsoup.nodes.Document;
 public class StartapyRu implements Fetcher {
 
     @Override
+    public String url() {
+        return "startapy.ru";
+    }
+
+    @Override
     public BasicModel parse(String url) {
         Document doc = Utils.getDocument(url);
 

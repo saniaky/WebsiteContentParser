@@ -14,6 +14,11 @@ import org.jsoup.nodes.Element;
 public class ToWaveRu implements Fetcher {
 
     @Override
+    public String url() {
+        return "towave.ru";
+    }
+
+    @Override
     public BasicModel parse(String url) {
         Document doc = Utils.getDocument(url);
 

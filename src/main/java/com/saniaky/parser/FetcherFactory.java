@@ -1,6 +1,38 @@
 package com.saniaky.parser;
 
-import com.saniaky.parser.custom.*;
+import com.saniaky.parser.custom.AinUa;
+import com.saniaky.parser.custom.BankirRu;
+import com.saniaky.parser.custom.CossaRu;
+import com.saniaky.parser.custom.DeloUa;
+import com.saniaky.parser.custom.FirrmaRu;
+import com.saniaky.parser.custom.ForbesNetUa;
+import com.saniaky.parser.custom.ForumDailyCom;
+import com.saniaky.parser.custom.FuturebankingRu;
+import com.saniaky.parser.custom.GeekTimesRu;
+import com.saniaky.parser.custom.GrowRichSu;
+import com.saniaky.parser.custom.HabrahabrRu;
+import com.saniaky.parser.custom.IGateComUa;
+import com.saniaky.parser.custom.ImenaUa;
+import com.saniaky.parser.custom.InformationTechnologyRu;
+import com.saniaky.parser.custom.InventureComUa;
+import com.saniaky.parser.custom.InvestGo24;
+import com.saniaky.parser.custom.ItcUa;
+import com.saniaky.parser.custom.KorrespondentNet;
+import com.saniaky.parser.custom.LifehackerRu;
+import com.saniaky.parser.custom.NovistiitNet;
+import com.saniaky.parser.custom.Psm7Com;
+import com.saniaky.parser.custom.RbRu;
+import com.saniaky.parser.custom.StartapyRu;
+import com.saniaky.parser.custom.StartupUA;
+import com.saniaky.parser.custom.TherunetCom;
+import com.saniaky.parser.custom.ToWaveRu;
+import com.saniaky.parser.custom.TutBy;
+import com.saniaky.parser.custom.VCRu;
+import com.saniaky.parser.custom.VedomostiRu;
+import com.saniaky.parser.custom.WebPaymentRu;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 
@@ -10,99 +42,48 @@ import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
  */
 public class FetcherFactory {
 
-    private static GenericFetcher genericFetcher = new GenericFetcher();
-    private static StartapyRu startapyRu = new StartapyRu();
-    private static StartupUAFetcher startupUaFetcher = new StartupUAFetcher();
-    private static InvestGo24Fetcher investGo24Fetcher = new InvestGo24Fetcher();
-    private static InventureComUa inventureComUa = new InventureComUa();
-    private static DeloUa deloUa = new DeloUa();
-    private static WebPaymentRu webPaymentRu = new WebPaymentRu();
-    private static GrowRichSu growRichSu = new GrowRichSu();
-    private static ForbesNetUa forbesNetUa = new ForbesNetUa();
-    private static VCRu vcRu = new VCRu();
-    private static LifehackerRu lifehackerRu = new LifehackerRu();
-    private static ToWaveRu toWaveRu = new ToWaveRu();
-    private static AinUa ainUa = new AinUa();
-    private static ImenaUa imenaUa = new ImenaUa();
-    private static FuturebankingRu futurebankingRu = new FuturebankingRu();
-    private static RbRu rbRu = new RbRu();
-    private static HabrahabrRu habrahabrRu = new HabrahabrRu();
-    private static BankirRu bankirRu = new BankirRu();
-    private static TherunetCom therunetCom = new TherunetCom();
+    private static Fetcher genericFetcher = new GenericFetcher();
+
+    private static List<Fetcher> fetcherList = Arrays.asList(
+            new StartapyRu(),
+            new StartupUA(),
+            new InvestGo24(),
+            new InventureComUa(),
+            new DeloUa(),
+            new WebPaymentRu(),
+            new GrowRichSu(),
+            new ForbesNetUa(),
+            new VCRu(),
+            new LifehackerRu(),
+            new ToWaveRu(),
+            new AinUa(),
+            new ImenaUa(),
+            new FuturebankingRu(),
+            new RbRu(),
+            new HabrahabrRu(),
+            new BankirRu(),
+            new TherunetCom(),
+            new GeekTimesRu(),
+            new TutBy(),
+            new CossaRu(),
+            new VedomostiRu(),
+            new ForumDailyCom(),
+            new IGateComUa(),
+            new NovistiitNet(),
+            new KorrespondentNet(),
+            new InformationTechnologyRu(),
+            new Psm7Com(),
+            new ItcUa(),
+            new FirrmaRu()
+    );
 
 
     public static Fetcher getFetcher(String url) {
 
-        if (containsIgnoreCase(url, "startapy.ru")) {
-            return startapyRu;
-        }
-
-        if (containsIgnoreCase(url, "startup.ua")) {
-            return startupUaFetcher;
-        }
-
-        if (containsIgnoreCase(url, "investgo24.com")) {
-            return investGo24Fetcher;
-        }
-
-        if (containsIgnoreCase(url, "inventure.com.ua")) {
-            return inventureComUa;
-        }
-
-        if (containsIgnoreCase(url, "delo.ua")) {
-            return deloUa;
-        }
-
-        if (containsIgnoreCase(url, "web-payment.ru")) {
-            return webPaymentRu;
-        }
-
-        if (containsIgnoreCase(url, "grow-rich.su")) {
-            return growRichSu;
-        }
-
-        if (containsIgnoreCase(url, "forbes.net.ua")) {
-            return forbesNetUa;
-        }
-
-        if (containsIgnoreCase(url, "vc.ru")) {
-            return vcRu;
-        }
-
-        if (containsIgnoreCase(url, "lifehacker.ru")) {
-            return lifehackerRu;
-        }
-
-        if (containsIgnoreCase(url, "towave.ru")) {
-            return toWaveRu;
-        }
-
-        if (containsIgnoreCase(url, "ain.ua")) {
-            return ainUa;
-        }
-
-        if (containsIgnoreCase(url, "imena.ua")) {
-            return imenaUa;
-        }
-
-        if (containsIgnoreCase(url, "futurebanking.ru")) {
-            return futurebankingRu;
-        }
-
-        if (containsIgnoreCase(url, "rb.ru")) {
-            return rbRu;
-        }
-
-        if (containsIgnoreCase(url, "habrahabr.ru")) {
-            return habrahabrRu;
-        }
-
-        if (containsIgnoreCase(url, "bankir.ru")) {
-            return bankirRu;
-        }
-
-        if (containsIgnoreCase(url, "therunet.com")) {
-            return therunetCom;
+        for (Fetcher fetcher : fetcherList) {
+            if (containsIgnoreCase(url, fetcher.url())) {
+                return fetcher;
+            }
         }
 
         return genericFetcher;

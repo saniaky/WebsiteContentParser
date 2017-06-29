@@ -43,18 +43,6 @@ public class WordRenderer {
     private static final String TEMP_FILE = "targetFile.tmp";
     private static final String USER_AGENT = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2";
 
-    private static void save(XWPFDocument document, String fileName) {
-        try {
-            document.enforceUpdateFields();
-            File file = new File(fileName);
-            FileOutputStream out = new FileOutputStream(file);
-            document.write(out);
-            out.close();
-        } catch (IOException e) {
-            System.err.println("Can't save file to disk! Details: " + e.getMessage());
-        }
-    }
-
     public void createWord(List<BasicModel> articles, String fileName) {
         XWPFDocument document = createDocument();
         if (document == null) {
@@ -207,6 +195,28 @@ public class WordRenderer {
             System.err.println("Can't open template file. Details: " + e.getMessage());
         }
         return document;
+    }
+
+    private static void save(XWPFDocument document, String fileName) {
+        FileOutputStream out = null;
+
+        try {
+            document.enforceUpdateFields();
+            File file = new File(fileName);
+            out = new FileOutputStream(file);
+            document.write(out);
+
+        } catch (IOException e) {
+            System.err.println("Can't save file to disk! Details: " + e.getMessage());
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private FileInputStream getTemplate() throws FileNotFoundException {

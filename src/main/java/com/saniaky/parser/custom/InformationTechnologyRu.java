@@ -3,17 +3,18 @@ package com.saniaky.parser.custom;
 import com.saniaky.Utils;
 import com.saniaky.model.BasicModel;
 import com.saniaky.parser.Fetcher;
+import com.saniaky.parser.GenericFetcher;
 import org.jsoup.nodes.Document;
 
 /**
  * @author Alexander Kohonovsky
- * @since 06.03.2017
+ * @since 21.04.2017
  */
-public class WebPaymentRu implements Fetcher {
+public class InformationTechnologyRu implements Fetcher {
 
     @Override
     public String url() {
-        return "web-payment.ru";
+        return "information-technology.ru";
     }
 
     @Override
@@ -24,13 +25,11 @@ public class WebPaymentRu implements Fetcher {
             return null;
         }
 
-        BasicModel model = new BasicModel();
+        GenericFetcher fetcher = new GenericFetcher();
+        BasicModel model = fetcher.parse(url);
 
-        model.setUrl(url);
-        model.setTitle(doc.select("meta[property=og:title]").attr("content"));
-        model.setImageUrl(doc.select("meta[property=og:image]").attr("content"));
-
-        String article = doc.select("div.article").html();
+        model.setTitle(doc.select("meta[name=description]").attr("content"));
+        String article = doc.select("#ja-content-main").html();
         model.setText(Utils.replaceParagraphWithNewLines(article));
 
         return model;

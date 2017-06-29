@@ -1,5 +1,6 @@
 package com.saniaky.parser.custom;
 
+import com.saniaky.Utils;
 import com.saniaky.model.custom.StartupUAModel;
 import com.saniaky.parser.Fetcher;
 import org.jsoup.Jsoup;
@@ -13,14 +14,17 @@ import java.net.URL;
  * @author Alexander Kohonovsky
  * @since 30.01.2017
  */
-public class StartupUAFetcher implements Fetcher {
+public class StartupUA implements Fetcher {
 
-    public static final int TIMEOUT = 5000;
+    @Override
+    public String url() {
+        return "startup.ua";
+    }
 
     @Override
     public StartupUAModel parse(String url) {
 
-        Document doc = getDocument(url);
+        Document doc = Utils.getDocument(url);
 
         if (doc == null) {
             return null;
@@ -45,25 +49,6 @@ public class StartupUAFetcher implements Fetcher {
         model.setProposal(doc.select("#PROPOSAL > .i_d_c").text()); // Предложение инвестор
 
         return model;
-    }
-
-    private String getHost(String url) {
-        try {
-            return new URL(url).getHost();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    private Document getDocument(String url) {
-
-        try {
-            return Jsoup.connect(url).timeout(TIMEOUT).get();
-        } catch (IOException e) {
-        }
-
-        return null;
     }
 
 }

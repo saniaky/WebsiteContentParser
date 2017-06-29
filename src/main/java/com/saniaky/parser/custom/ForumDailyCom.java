@@ -6,14 +6,14 @@ import com.saniaky.parser.Fetcher;
 import org.jsoup.nodes.Document;
 
 /**
- * @author Alexander Kohonovsky
- * @since 06.03.2017
+ * @author saniaky
+ * @since 6/9/17
  */
-public class WebPaymentRu implements Fetcher {
+public class ForumDailyCom implements Fetcher {
 
     @Override
     public String url() {
-        return "web-payment.ru";
+        return "forumdaily.com";
     }
 
     @Override
@@ -30,10 +30,11 @@ public class WebPaymentRu implements Fetcher {
         model.setTitle(doc.select("meta[property=og:title]").attr("content"));
         model.setImageUrl(doc.select("meta[property=og:image]").attr("content"));
 
-        String article = doc.select("div.article").html();
-        model.setText(Utils.replaceParagraphWithNewLines(article));
+        String article = doc.select(".post-content").html();
+        model.setText(Utils.formatHTMLToText(article));
 
         return model;
     }
 
 }
+

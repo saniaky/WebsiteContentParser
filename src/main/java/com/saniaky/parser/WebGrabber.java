@@ -1,10 +1,6 @@
 package com.saniaky.parser;
 
 import com.saniaky.model.BasicModel;
-import com.saniaky.model.GrabberResult;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author saniaky
@@ -12,30 +8,23 @@ import java.util.List;
  */
 public class WebGrabber {
 
-    public static GrabberResult go(List<String> urls) {
+    public static BasicModel go(String url) {
 
-        List<BasicModel> articles = new ArrayList<>(urls.size());
-        List<String> failedUrls = new ArrayList<>();
+        // Get appropriate website fetcher
+        Fetcher fetcher = FetcherFactory.getFetcher(url);
 
-        for (String url : urls) {
-            // Get appropriate website fetcher
-            Fetcher fetcher = FetcherFactory.getFetcher(url);
+        // Parse page
+        BasicModel article = fetcher.parse(url);
 
-            // Parse page
-            BasicModel article = fetcher.parse(url);
-
-            // Check if page parsed successfully
-            if (article == null) {
-                failedUrls.add(url);
-                System.err.println(String.format("*** Article missed: %s", url));
-            } else {
-                articles.add(article);
-                System.out.println(String.format("%s (%s)", article.getTitle(), article.getUrl()));
-            }
-
+        // Check if page parsed successfully
+        if (article == null) {
+            System.err.println(String.format("*** Article missed: %s", url));
+        } else {
+            System.out.println(String.format("%s (%s)", article.getTitle(), article.getUrl()));
         }
 
-        return new GrabberResult(articles, failedUrls);
+
+        return article;
     }
 
 }

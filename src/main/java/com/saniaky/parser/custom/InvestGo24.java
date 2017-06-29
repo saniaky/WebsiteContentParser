@@ -12,7 +12,12 @@ import org.jsoup.select.Elements;
  * @author saniaky
  * @since 2/6/17
  */
-public class InvestGo24Fetcher implements Fetcher {
+public class InvestGo24 implements Fetcher {
+
+    @Override
+    public String url() {
+        return "investgo24.com";
+    }
 
     @Override
     public BasicModel parse(String url) {

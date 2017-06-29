@@ -12,6 +12,11 @@ import org.jsoup.nodes.Document;
 public class VCRu implements Fetcher {
 
     @Override
+    public String url() {
+        return "vc.ru";
+    }
+
+    @Override
     public BasicModel parse(String url) {
         Document doc = Utils.getDocument(url);
 

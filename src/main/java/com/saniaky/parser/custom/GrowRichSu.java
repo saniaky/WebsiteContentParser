@@ -12,6 +12,11 @@ import org.jsoup.nodes.Document;
 public class GrowRichSu implements Fetcher {
 
     @Override
+    public String url() {
+        return "grow-rich.su";
+    }
+
+    @Override
     public BasicModel parse(String url) {
         Document doc = Utils.getDocument(url);
 

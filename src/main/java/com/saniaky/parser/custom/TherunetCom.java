@@ -12,6 +12,11 @@ import org.jsoup.nodes.Document;
 public class TherunetCom implements Fetcher {
 
     @Override
+    public String url() {
+        return "therunet.com";
+    }
+
+    @Override
     public BasicModel parse(String url) {
         Document doc = Utils.getDocument(url);
 

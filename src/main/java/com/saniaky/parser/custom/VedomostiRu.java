@@ -7,13 +7,13 @@ import org.jsoup.nodes.Document;
 
 /**
  * @author Alexander Kohonovsky
- * @since 06.03.2017
+ * @since 21.04.2017
  */
-public class WebPaymentRu implements Fetcher {
+public class VedomostiRu implements Fetcher {
 
     @Override
     public String url() {
-        return "web-payment.ru";
+        return "vedomosti.ru";
     }
 
     @Override
@@ -30,7 +30,7 @@ public class WebPaymentRu implements Fetcher {
         model.setTitle(doc.select("meta[property=og:title]").attr("content"));
         model.setImageUrl(doc.select("meta[property=og:image]").attr("content"));
 
-        String article = doc.select("div.article").html();
+        String article = doc.select(".js-mediator-article").html();
         model.setText(Utils.replaceParagraphWithNewLines(article));
 
         return model;

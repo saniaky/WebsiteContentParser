@@ -8,6 +8,8 @@ import com.saniaky.model.BasicModel;
  */
 public interface Fetcher {
 
+    String url();
+
     BasicModel parse(String url);
 
 }

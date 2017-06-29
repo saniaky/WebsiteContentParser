@@ -12,6 +12,11 @@ import org.jsoup.nodes.Document;
 public class LifehackerRu implements Fetcher {
 
     @Override
+    public String url() {
+        return "lifehacker.ru";
+    }
+
+    @Override
     public BasicModel parse(String url) {
         Document doc = Utils.getDocument(url);
 

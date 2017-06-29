@@ -19,10 +19,10 @@ public class InvestGo24Model extends BasicModel {
     @Override
     public String getText() {
         return String.format(
-                "Ссылка: %s\n\n" +
-                        "Инициатор проекта, контакты:\n      %s\n\n" +
-                        "Описание бизнес идеи:\n      %s\n\n" +
-                        "Полное описание инвестиционного проекта:\n      %s\n\n",
+                "Ссылка: %s%n%n" +
+                        "Инициатор проекта, контакты:%n      %s%n%n" +
+                        "Описание бизнес идеи:%n      %s%n%n" +
+                        "Полное описание инвестиционного проекта:%n      %s%n%n",
                 getUrl(),
                 getContact(),
                 getDescription(),

@@ -12,6 +12,11 @@ import org.jsoup.nodes.Document;
 public class ForbesNetUa implements Fetcher {
 
     @Override
+    public String url() {
+        return "forbes.net.ua";
+    }
+
+    @Override
     public BasicModel parse(String url) {
         Document doc = Utils.getDocument(url);
 

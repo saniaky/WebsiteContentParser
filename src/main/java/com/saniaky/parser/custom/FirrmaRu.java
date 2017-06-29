@@ -6,14 +6,14 @@ import com.saniaky.parser.Fetcher;
 import org.jsoup.nodes.Document;
 
 /**
- * @author Alexander Kohonovsky
- * @since 06.03.2017
+ * @author saniaky
+ * @since 6/29/17
  */
-public class WebPaymentRu implements Fetcher {
+public class FirrmaRu implements Fetcher {
 
     @Override
     public String url() {
-        return "web-payment.ru";
+        return "firrma.ru";
     }
 
     @Override
@@ -27,11 +27,15 @@ public class WebPaymentRu implements Fetcher {
         BasicModel model = new BasicModel();
 
         model.setUrl(url);
-        model.setTitle(doc.select("meta[property=og:title]").attr("content"));
+
+        String title = doc.select("meta[property=og:title]").attr("content");
+        title = title.replaceAll("- Firrma. Данные для стартапа", "");
+        model.setTitle(title);
+
         model.setImageUrl(doc.select("meta[property=og:image]").attr("content"));
 
-        String article = doc.select("div.article").html();
-        model.setText(Utils.replaceParagraphWithNewLines(article));
+        String article = doc.select(".news-text").html();
+        model.setText(Utils.formatHTMLToText(article));
 
         return model;
     }

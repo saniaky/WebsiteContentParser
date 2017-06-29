@@ -47,6 +47,11 @@ public class FindArticleUrls {
             System.out.println(successfulResult);
         }
 
+        System.out.println("SOMETHING WRONG:");
+        for (String failedId : somethingWrong) {
+            System.out.println(failedId);
+        }
+
         System.out.println("NOT FOUND:");
         for (String failedId : notFound) {
             System.out.println(failedId);

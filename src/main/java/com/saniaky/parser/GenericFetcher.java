@@ -19,16 +19,17 @@ public class GenericFetcher implements Fetcher {
 
     private HtmlFetcher fetcher = new HtmlFetcher();
 
+    @Override
+    public String url() {
+        return null;
+    }
+
     public BasicModel parse(String url) {
         BasicModel result = null;
         int failedCount = 0;
 
         while (true) {
             try {
-                if (url.contains("firrma.ru")) {
-                    Utils.sleep(TIMEOUT);
-                }
-
                 JResult jResult = fetcher.fetchAndExtract(url, RESOLVE_TIMEOUT, true);
                 if (jResult.getTitle().isEmpty()) {
                     System.err.println("Пропущена статья - " + url);

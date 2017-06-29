@@ -1,11 +1,12 @@
 package com.saniaky;
 
-import com.saniaky.model.GrabberResult;
+import com.saniaky.model.BasicModel;
 import com.saniaky.parser.WebGrabber;
 import com.saniaky.word.WordRenderer;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -31,19 +32,25 @@ public class Main {
         }
 
         WordRenderer wordRenderer = new WordRenderer();
+        List<BasicModel> articles = new LinkedList<>();
 
         // Batch parse & create word file
-        for (int i = 0; i * BATCH_SIZE < urls.size(); i++) {
-            List<String> batchUrls = urls.subList(i, Math.min(urls.size(), i + BATCH_SIZE));
-
-            // Fetch data from websites
-            int batchNum = i + 1;
-            System.out.println("Fetching " + batchNum + " batch.");
-            GrabberResult result = WebGrabber.go(batchUrls);
+        int batchNum = 1;
+        for (String url : urls) {
+            // Fetch url from website
+            articles.add(WebGrabber.go(url));
 
             // Create word file with articles
+            if (articles.size() == BATCH_SIZE) {
+                System.out.println("Creating word file.");
+                wordRenderer.createWord(articles, getFilename(batchNum++));
+                articles.clear();
+            }
+        }
+
+        if (articles.size() > 0) {
             System.out.println("Creating word file.");
-            wordRenderer.createWord(result.getProcessedArticles(), getFilename(batchNum));
+            wordRenderer.createWord(articles, getFilename(batchNum));
         }
     }
 

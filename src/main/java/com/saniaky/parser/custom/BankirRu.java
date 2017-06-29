@@ -12,6 +12,11 @@ import org.jsoup.nodes.Document;
 public class BankirRu implements Fetcher {
 
     @Override
+    public String url() {
+        return "bankir.ru";
+    }
+
+    @Override
     public BasicModel parse(String url) {
         Document doc = Utils.getDocument(url);
 
