@@ -1,7 +1,8 @@
-package com.saniaky;
+package com.saniaky.util;
 
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.HttpConnection;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -82,10 +83,15 @@ public final class Utils {
 
             try {
                 url = URLDecoder.decode(url, StandardCharsets.UTF_8.toString());
-                document = Jsoup.connect(url).timeout(TIMEOUT).get();
+                document = Jsoup.connect(url).timeout(TIMEOUT).userAgent(HttpConnection.DEFAULT_UA).get();
             } catch (HttpStatusException e) {
-                lastErrorMessage = "Page not found! (404)";
-                tryCount = MAX_TRY_COUNT;
+                if (e.getStatusCode() == 503) {
+                    System.err.println(String.format("%d/%d, Error 503. Trying to load again.", tryCount, MAX_TRY_COUNT));
+                    Utils.sleep(WAIT_TIMEOUT);
+                } else {
+                    lastErrorMessage = "Page not found! (404)";
+                    tryCount = MAX_TRY_COUNT;
+                }
             } catch (Exception e) {
                 lastErrorMessage = "Can't retrieve page! Details: " + e.getLocalizedMessage();
                 Utils.sleep(WAIT_TIMEOUT);
@@ -131,5 +137,13 @@ public final class Utils {
     private static URL getResourceUrl(String fileName) {
         ClassLoader classLoader = Utils.class.getClassLoader();
         return classLoader.getResource(fileName);
+    }
+
+
+    public static void removeFile(String path) {
+        File file = new File(path);
+        if (file.exists() && !file.delete()) {
+            System.err.println("Can't delete temp file");
+        }
     }
 }

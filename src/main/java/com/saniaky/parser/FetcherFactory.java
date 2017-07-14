@@ -40,7 +40,7 @@ import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
  * @author Alexander Kohonovsky
  * @since 30.01.2017
  */
-public class FetcherFactory {
+class FetcherFactory {
 
     private static Fetcher genericFetcher = new GenericFetcher();
 
@@ -78,7 +78,7 @@ public class FetcherFactory {
     );
 
 
-    public static Fetcher getFetcher(String url) {
+    static Fetcher getFetcher(String url) {
 
         for (Fetcher fetcher : fetcherList) {
             if (containsIgnoreCase(url, fetcher.url())) {

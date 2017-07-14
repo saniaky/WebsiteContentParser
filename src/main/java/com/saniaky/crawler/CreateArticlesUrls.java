@@ -1,6 +1,6 @@
 package com.saniaky.crawler;
 
-import com.saniaky.Utils;
+import com.saniaky.util.Utils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;

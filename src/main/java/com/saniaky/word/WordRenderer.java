@@ -1,7 +1,7 @@
 package com.saniaky.word;
 
-import com.saniaky.Utils;
 import com.saniaky.model.BasicModel;
+import com.saniaky.util.Utils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.util.Units;
@@ -158,7 +158,7 @@ public class WordRenderer {
             }
         }
 
-        removeTempFile();
+        Utils.removeFile(TEMP_FILE);
     }
 
     private int getPictureType(File targetFile) throws IOException {
@@ -227,10 +227,4 @@ public class WordRenderer {
         return new File(TEMP_FILE);
     }
 
-    private void removeTempFile() {
-        File file = new File(TEMP_FILE);
-        if (file.exists()) {
-            file.delete();
-        }
-    }
 }

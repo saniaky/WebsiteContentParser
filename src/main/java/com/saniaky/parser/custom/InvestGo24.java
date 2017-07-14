@@ -1,6 +1,6 @@
 package com.saniaky.parser.custom;
 
-import com.saniaky.Utils;
+import com.saniaky.util.Utils;
 import com.saniaky.model.BasicModel;
 import com.saniaky.model.custom.InvestGo24Model;
 import com.saniaky.parser.Fetcher;

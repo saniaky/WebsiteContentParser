@@ -1,6 +1,6 @@
 package com.saniaky.parser.custom;
 
-import com.saniaky.Utils;
+import com.saniaky.util.Utils;
 import com.saniaky.model.BasicModel;
 import com.saniaky.parser.Fetcher;
 import org.jsoup.nodes.Document;
@@ -19,6 +19,7 @@ public class FirrmaRu implements Fetcher {
     @Override
     public BasicModel parse(String url) {
         Document doc = Utils.getDocument(url);
+        Utils.sleep(3000);
 
         if (doc == null) {
             return null;

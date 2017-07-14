@@ -1,7 +1,7 @@
 package com.saniaky.parser;
 
-import com.saniaky.Utils;
 import com.saniaky.model.BasicModel;
+import com.saniaky.util.Utils;
 import de.jetwick.snacktory.HtmlFetcher;
 import de.jetwick.snacktory.JResult;
 
@@ -12,7 +12,6 @@ import de.jetwick.snacktory.JResult;
 public class GenericFetcher implements Fetcher {
 
     // System variables
-    private static final int TIMEOUT = 1000;
     private static final int SLEEP_TIMEOUT = 5000;
     private static final int MAX_FAILED_COUNT = 20;
     private static final int RESOLVE_TIMEOUT = 30000;
@@ -28,23 +27,18 @@ public class GenericFetcher implements Fetcher {
         BasicModel result = null;
         int failedCount = 0;
 
-        while (true) {
+        while (failedCount < MAX_FAILED_COUNT) {
             try {
                 JResult jResult = fetcher.fetchAndExtract(url, RESOLVE_TIMEOUT, true);
-                if (jResult.getTitle().isEmpty()) {
-                    System.err.println("Пропущена статья - " + url);
-                } else {
+                if (!jResult.getTitle().isEmpty()) {
                     result = new BasicModel(
                             jResult.getUrl(), jResult.getTitle(), jResult.getText(),
                             jResult.getImageUrl(), jResult.getKeywords());
                 }
-
-                break;
-
             } catch (Exception e) {
-                if (e.getMessage().equals("Invalid Http response") && failedCount < MAX_FAILED_COUNT) {
-                    Utils.sleep(SLEEP_TIMEOUT);
+                if (e.getMessage().equals("Invalid Http response")) {
                     failedCount++;
+                    Utils.sleep(SLEEP_TIMEOUT);
                 } else {
                     System.err.println("Пропущена статья - " + url + ", Error: " + e.getMessage());
                     break;

@@ -1,6 +1,6 @@
 package com.saniaky.parser.custom;
 
-import com.saniaky.Utils;
+import com.saniaky.util.Utils;
 import com.saniaky.model.BasicModel;
 import com.saniaky.parser.Fetcher;
 import org.apache.commons.lang3.StringUtils;

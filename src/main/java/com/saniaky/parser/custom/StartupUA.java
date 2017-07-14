@@ -1,14 +1,9 @@
 package com.saniaky.parser.custom;
 
-import com.saniaky.Utils;
+import com.saniaky.util.Utils;
 import com.saniaky.model.custom.StartupUAModel;
 import com.saniaky.parser.Fetcher;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * @author Alexander Kohonovsky
